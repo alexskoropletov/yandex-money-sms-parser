@@ -4,6 +4,10 @@ if (isset($argv[1])) {
     $patterns = [
         'code'   => [
             'regex'  => '/([0-9]{4}(?![0-9]))/',
+            'after'  => function($message) {
+                // убираем пробелы и переносы строки в сумме платежа
+                return str_replace([" ", "\n", "\t", "\r"], '', $message);
+            },
             'name'   => 'Код подтверждения',
             'result' => false,
         ],
@@ -20,15 +24,15 @@ if (isset($argv[1])) {
     ];
     if ($message = file_get_contents($argv[1])) {
         echo sprintf("SMS сообщение: %s'%s'", PHP_EOL, $message) . PHP_EOL . PHP_EOL;
-        $message = str_replace([" ", "\n", "\t", "\r"], '', $message);
         foreach ($patterns as $pattern_key => $pattern) {
             preg_match($pattern['regex'], $message, $matches);
-            if ($pattern_key) {
-                if (isset($matches[0])) {
-                    echo sprintf('%s: %s', $pattern['name'], $matches[0]) . PHP_EOL;
-                } else {
-                    echo sprintf("[!] Ошибка: не удалось найти %s", $pattern['name']) . PHP_EOL;
-                }
+            if (isset($matches[0])) {
+                echo sprintf('%s: %s', $pattern['name'], $matches[0]) . PHP_EOL;
+            } else {
+                echo sprintf("[!] Ошибка: не удалось найти %s", $pattern['name']) . PHP_EOL;
+            }
+            if (isset($pattern['after'])) {
+                $message = $pattern['after']($message);
             }
         }
     } else {

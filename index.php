@@ -1,4 +1,7 @@
 <?php
+/**
+ * 2018-06-15
+ */
 echo "[<]" . PHP_EOL . PHP_EOL;
 if (isset($argv[1])) {
     $patterns = [
@@ -33,6 +36,10 @@ if (isset($argv[1])) {
 }
 echo PHP_EOL . "[>]" . PHP_EOL;
 
+/**
+ * @param $patterns array
+ * @param $message string
+ */
 function findUsefulStuffInMessage($patterns, $message) {
     foreach ($patterns as $pattern_key => $pattern) {
         preg_match($pattern['regex'], $message, $matches);
@@ -46,5 +53,3 @@ function findUsefulStuffInMessage($patterns, $message) {
         }
     }
 }
-
-

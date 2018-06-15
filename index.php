@@ -24,17 +24,7 @@ if (isset($argv[1])) {
     ];
     if ($message = file_get_contents($argv[1])) {
         echo sprintf("SMS сообщение: %s'%s'", PHP_EOL, $message) . PHP_EOL . PHP_EOL;
-        foreach ($patterns as $pattern_key => $pattern) {
-            preg_match($pattern['regex'], $message, $matches);
-            if (isset($matches[0])) {
-                echo sprintf('%s: %s', $pattern['name'], $matches[0]) . PHP_EOL;
-            } else {
-                echo sprintf("[!] Ошибка: не удалось найти %s", $pattern['name']) . PHP_EOL;
-            }
-            if (isset($pattern['after'])) {
-                $message = $pattern['after']($message);
-            }
-        }
+        findUsefulStuffInMessage($patterns, $message);
     } else {
         echo "[!] Ошибка: не удалось прочитать файл с сообщением" . PHP_EOL;
     }
@@ -42,3 +32,19 @@ if (isset($argv[1])) {
     echo "[!] Ошибка: не задан путь к файлу с сообщением" . PHP_EOL;
 }
 echo PHP_EOL . "[>]" . PHP_EOL;
+
+function findUsefulStuffInMessage($patterns, $message) {
+    foreach ($patterns as $pattern_key => $pattern) {
+        preg_match($pattern['regex'], $message, $matches);
+        if (isset($matches[0])) {
+            echo sprintf('%s: %s', $pattern['name'], $matches[0]) . PHP_EOL;
+        } else {
+            echo sprintf("[!] Ошибка: не удалось найти %s", $pattern['name']) . PHP_EOL;
+        }
+        if (isset($pattern['after'])) {
+            $message = $pattern['after']($message);
+        }
+    }
+}
+
+
